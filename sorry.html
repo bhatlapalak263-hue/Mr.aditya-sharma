@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>I'm Really Sorry</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Poppins:wght@300;400;500;600&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --cream-1:#FFF5F2;
+    --cream-2:#FFE9E5;
+    --peach:#FDE8E4;
+    --cream-3:#FFF8F3;
+    --accent-1:#E8A0A8;
+    --accent-2:#D98991;
+    --accent-3:#C97882;
+    --text-dark:#3D292D;
+    --text-mid:#5B4145;
+    --white-glass: rgba(255,255,255,0.55);
+    --white-glass-strong: rgba(255,255,255,0.72);
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:'Poppins', sans-serif;
+    color:var(--text-mid);
+    background: linear-gradient(160deg, var(--cream-1) 0%, var(--peach) 45%, var(--cream-2) 100%);
+    overflow-x:hidden;
+    position:relative;
+    min-height:100vh;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:0.01ms !important; animation-iteration-count:1 !important; transition-duration:0.01ms !important; scroll-behavior:auto !important;}
+  }
+
+  h1,h2{ font-family:'Playfair Display', serif; }
+
+  .script{ font-family:'Caveat', cursive; }
+
+  /* ---------- Floating background ---------- */
+  #bg-layer{
+    position:fixed;
+    inset:0;
+    z-index:0;
+    overflow:hidden;
+    pointer-events:none;
+  }
+
+  .drift{
+    position:absolute;
+    color:var(--accent-1);
+    font-family:'Playfair Display', serif;
+    font-weight:600;
+    white-space:nowrap;
+    user-select:none;
+    will-change:transform, opacity;
+  }
+
+  @keyframes floatUp{
+    0%{ transform: translateY(10vh) translateX(0) rotate(var(--rot,0deg)); opacity:0; }
+    10%{ opacity: var(--op,0.18); }
+    90%{ opacity: var(--op,0.18); }
+    100%{ transform: translateY(-115vh) translateX(var(--drift,20px)) rotate(var(--rot2,10deg)); opacity:0; }
+  }
+
+  @keyframes floatSide{
+    0%{ transform: translateX(-10vw) translateY(0) rotate(var(--rot,0deg)); opacity:0; }
+    10%{ opacity: var(--op,0.16); }
+    90%{ opacity: var(--op,0.16); }
+    100%{ transform: translateX(110vw) translateY(var(--drift,-30px)) rotate(var(--rot2,-8deg)); opacity:0; }
+  }
+
+  @keyframes pulseFade{
+    0%{ transform: scale(0.85) rotate(var(--rot,0deg)); opacity:0; }
+    50%{ transform: scale(1.05) rotate(var(--rot,0deg)); opacity: var(--op,0.2); }
+    100%{ transform: scale(1.2) rotate(var(--rot,0deg)); opacity:0; }
+  }
+
+  .heart-float{
+    position:absolute;
+    bottom:-5vh;
+    font-size:1.1rem;
+    color:var(--accent-2);
+    opacity:0.5;
+    animation: heartRise linear infinite;
+    will-change: transform, opacity;
+  }
+
+  @keyframes heartRise{
+    0%{ transform: translateY(0) translateX(0) scale(0.8); opacity:0; }
+    15%{ opacity:0.55; }
+    85%{ opacity:0.35; }
+    100%{ transform: translateY(-105vh) translateX(20px) scale(1.1); opacity:0; }
+  }
+
+  /* ---------- Layout ---------- */
+  main{ position:relative; z-index:1; }
+
+  section{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    padding:6vh 5vw;
+    position:relative;
+  }
+
+  .glow-behind{
+    position:absolute;
+    width:60vw;
+    max-width:700px;
+    height:60vw;
+    max-height:700px;
+    background: radial-gradient(circle, rgba(232,160,168,0.35) 0%, rgba(232,160,168,0) 70%);
+    filter: blur(10px);
+    z-index:-1;
+    animation: gentleGlow 6s ease-in-out infinite;
+  }
+
+  @keyframes gentleGlow{
+    0%,100%{ opacity:0.7; transform: scale(1); }
+    50%{ opacity:1; transform: scale(1.08); }
+  }
+
+  .card{
+    background: var(--white-glass);
+    backdrop-filter: blur(18px) saturate(140%);
+    -webkit-backdrop-filter: blur(18px) saturate(140%);
+    border: 1px solid rgba(255,255,255,0.6);
+    border-radius: 32px;
+    box-shadow: 0 20px 60px rgba(201,120,130,0.18), 0 2px 8px rgba(201,120,130,0.1);
+    padding: clamp(2rem, 5vw, 4rem);
+    max-width: 720px;
+    width: 100%;
+    text-align:center;
+    opacity:0;
+    transform: translateY(24px);
+    transition: opacity 1s ease, transform 1s ease;
+  }
+
+  .card.visible{
+    opacity:1;
+    transform: translateY(0);
+  }
+
+  .eyebrow{
+    font-size: clamp(1.1rem, 2vw, 1.4rem);
+    color: var(--accent-3);
+    font-family:'Caveat', cursive;
+    font-weight:600;
+    margin-bottom: 0.5rem;
+    letter-spacing:0.02em;
+  }
+
+  h1.title{
+    font-size: clamp(2.2rem, 6vw, 3.6rem);
+    font-weight:700;
+    color: var(--text-dark);
+    line-height:1.15;
+    margin-bottom:1.4rem;
+  }
+
+  .sub{
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    font-weight:500;
+    color: var(--text-mid);
+    margin-bottom:1.8rem;
+    line-height:1.7;
+  }
+
+  .message{
+    font-size: clamp(0.98rem, 1.6vw, 1.08rem);
+    line-height:1.95;
+    color: var(--text-mid);
+    white-space: pre-line;
+    text-align:left;
+    margin: 0 auto 2rem auto;
+    max-width: 560px;
+  }
+
+  .message .fade-line{
+    display:block;
+    opacity:0;
+    transform: translateY(8px);
+    animation: lineIn 0.9s ease forwards;
+  }
+
+  @keyframes lineIn{
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  /* Highlight card */
+  .highlight-wrap{
+    position:relative;
+    margin-top: 1rem;
+  }
+
+  .highlight-card{
+    background: linear-gradient(135deg, var(--white-glass-strong), rgba(253,232,228,0.6));
+    border-radius: 26px;
+    border: 1px solid rgba(255,255,255,0.7);
+    padding: clamp(1.4rem, 4vw, 2.2rem);
+    max-width: 480px;
+    margin: 0 auto;
+    box-shadow: 0 10px 40px rgba(201,120,130,0.16);
+    position:relative;
+  }
+
+  .highlight-card::before{
+    content:"";
+    position:absolute;
+    inset:-6px;
+    border-radius:32px;
+    background: radial-gradient(circle at 50% 50%, rgba(232,160,168,0.55), transparent 70%);
+    filter: blur(14px);
+    z-index:-1;
+    animation: glowPulse 3.2s ease-in-out infinite;
+  }
+
+  @keyframes glowPulse{
+    0%,100%{ opacity:0.5; }
+    50%{ opacity:1; }
+  }
+
+  .highlight-card p{
+    font-family:'Caveat', cursive;
+    font-size: clamp(1.3rem, 3vw, 1.7rem);
+    color: var(--text-dark);
+    line-height:1.5;
+  }
+
+  /* Buttons */
+  .btn-row{
+    display:flex;
+    gap:1rem;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-top:2.4rem;
+  }
+
+  .btn{
+    font-family:'Poppins', sans-serif;
+    font-weight:500;
+    font-size:1rem;
+    padding: 0.9rem 2rem;
+    border-radius: 999px;
+    border:none;
+    cursor:pointer;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .btn-primary{
+    background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(201,120,130,0.35);
+  }
+
+  .btn-primary:hover{
+    transform: translateY(-3px) scale(1.03);
+    box-shadow: 0 14px 36px rgba(201,120,130,0.45);
+  }
+
+  .btn-secondary{
+    background: transparent;
+    color: var(--accent-3);
+    border: 1.5px solid var(--accent-2);
+  }
+
+  .btn-secondary:hover{
+    background: rgba(232,160,168,0.15);
+    transform: translateY(-2px);
+  }
+
+  .btn:focus-visible{
+    outline: 3px solid var(--accent-3);
+    outline-offset: 3px;
+  }
+
+  .response-box{
+    margin-top:1.8rem;
+    max-height:0;
+    overflow:hidden;
+    opacity:0;
+    transition: max-height 0.8s ease, opacity 0.8s ease, margin-top 0.8s ease;
+  }
+
+  .response-box.show{
+    max-height:300px;
+    opacity:1;
+  }
+
+  .response-box p{
+    font-size: 1rem;
+    line-height:1.8;
+    margin-bottom:0.6rem;
+  }
+
+  .response-box p:last-child{
+    font-family:'Caveat', cursive;
+    font-size:1.4rem;
+    color: var(--accent-3);
+    font-weight:600;
+  }
+
+  /* Confetti hearts */
+  #confetti-layer{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:50;
+  }
+
+  .confetti-heart{
+    position:absolute;
+    top:-5vh;
+    font-size:1.4rem;
+    animation: confettiFall 3.2s ease-in forwards;
+  }
+
+  @keyframes confettiFall{
+    0%{ transform: translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform: translateY(105vh) rotate(360deg); opacity:0; }
+  }
+
+  /* Second section handwritten */
+  .handwritten-quote{
+    font-family:'Caveat', cursive;
+    font-size: clamp(1.4rem, 3.4vw, 2rem);
+    line-height:1.6;
+    color: var(--text-dark);
+    white-space:pre-line;
+  }
+
+  .mini-heart{
+    width:60px;
+    height:60px;
+    margin: 1.6rem auto 0 auto;
+    position:relative;
+    animation: heartbeat 2.2s ease-in-out infinite;
+  }
+
+  @keyframes heartbeat{
+    0%, 100%{ transform: scale(1); }
+    15%{ transform: scale(1.15); }
+    30%{ transform: scale(1); }
+    45%{ transform: scale(1.1); }
+    60%{ transform: scale(1); }
+  }
+
+  /* Final section */
+  .final-word{
+    font-size: clamp(2.4rem, 8vw, 4rem);
+    font-weight:700;
+    color: var(--accent-3);
+    letter-spacing:0.02em;
+    margin: 1rem 0;
+  }
+
+  .final-lines{
+    font-size: clamp(1rem, 2vw, 1.15rem);
+    line-height:2;
+    color: var(--text-mid);
+    margin-bottom:2rem;
+  }
+
+  .signature{
+    font-family:'Caveat', cursive;
+    font-size: clamp(1.6rem, 4vw, 2.2rem);
+    color: var(--text-dark);
+    margin-top:1rem;
+  }
+
+  .scroll-hint{
+    position:absolute;
+    bottom: 2.4rem;
+    left:50%;
+    transform: translateX(-50%);
+    font-size:1.6rem;
+    color: var(--accent-2);
+    animation: bounce 2s ease-in-out infinite;
+    opacity:0.7;
+  }
+
+  @keyframes bounce{
+    0%,100%{ transform: translate(-50%, 0); }
+    50%{ transform: translate(-50%, 10px); }
+  }
+
+  @media (max-width:600px){
+    .card{ border-radius:24px; }
+    .message{ text-align:left; }
+    .btn{ width:100%; }
+    .btn-row{ flex-direction:column; }
+  }
+</style>
+</head>
+<body>
+
+<div id="bg-layer"></div>
+<div id="confetti-layer"></div>
+
+<main>
+
+  <!-- HERO -->
+  <section id="hero">
+    <div class="glow-behind"></div>
+    <div class="card" id="hero-card">
+      <div class="eyebrow">Hey Bestie… 💗</div>
+      <h1 class="title">I'm Really Sorry.</h1>
+      <p class="sub">I know I messed up.<br>And honestly, there's no excuse for it.</p>
+
+      <div class="message" id="hero-message"></div>
+
+      <div class="highlight-wrap">
+        <div class="highlight-card">
+          <p>Sometimes "sorry" feels too small<br>for a mistake that means so much.<br><br>But this one is from my heart. ❤️</p>
+        </div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-primary" id="forgive-btn">Forgive Me? 🥺</button>
+        <button class="btn btn-secondary" id="heart-btn">Read My Heart 💌</button>
+      </div>
+
+      <div class="response-box" id="response-box">
+        <p>I promise I'll learn from this.<br>Thank you for hearing me out. ❤️</p>
+        <p>No matter what, you'll always be my best friend.</p>
+      </div>
+    </div>
+    <div class="scroll-hint">⌄</div>
+  </section>
+
+  <!-- SECTION 2 -->
+  <section id="honest">
+    <div class="card fade-in-scroll">
+      <div class="eyebrow">A little more honestly</div>
+      <div class="handwritten-quote">I could say a thousand things,
+but the truth is actually very simple:
+
+I was wrong.
+You didn't deserve that.
+And I'm sorry.
+
+I just hope, you can forgive me.
+
+Because losing your friendship
+is something I never want to imagine.</div>
+
+      <svg class="mini-heart" viewBox="0 0 32 29" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M16 28C16 28 2 19.5 2 9.8C2 4.9 5.8 1 10.5 1C13 1 15.1 2.2 16 4.1C16.9 2.2 19 1 21.5 1C26.2 1 30 4.9 30 9.8C30 19.5 16 28 16 28Z" fill="#E8A0A8"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- FINAL -->
+  <section id="final">
+    <div class="glow-behind"></div>
+    <div class="card fade-in-scroll">
+      <p class="sub" style="margin-bottom:0.4rem;">From someone who really, really doesn't want to lose you…</p>
+      <div class="final-word">I'M SORRY. ❤️</div>
+      <div class="final-lines">All my mistake.<br>All my apology.<br>All my heart.</div>
+      <div class="signature">— Your Best Friend</div>
+    </div>
+  </section>
+
+</main>
+
+<script>
+  // ---------- Background generator ----------
+  const bgLayer = document.getElementById('bg-layer');
+  const words = ["Sorry", "I'm Sorry", "SORRY 💗", "sorry", "I'm sorry"];
+  const sizes = ['1.2rem','1.6rem','2.1rem','2.6rem','3.2rem'];
+  const animTypes = ['floatUp','floatSide','pulseFade'];
+
+  function rand(min, max){ return Math.random() * (max - min) + min; }
+
+  function spawnWord(){
+    const el = document.createElement('div');
+    el.className = 'drift';
+    el.textContent = words[Math.floor(rand(0, words.length))];
+    el.style.fontSize = sizes[Math.floor(rand(0, sizes.length))];
+    el.style.left = rand(0, 92) + 'vw';
+    el.style.top = rand(0, 92) + 'vh';
+    const anim = animTypes[Math.floor(rand(0, animTypes.length))];
+    const duration = rand(14, 30);
+    const delay = rand(0, 20);
+    el.style.setProperty('--op', rand(0.08, 0.22).toFixed(2));
+    el.style.setProperty('--rot', rand(-15, 15) + 'deg');
+    el.style.setProperty('--rot2', rand(-25, 25) + 'deg');
+    el.style.setProperty('--drift', rand(-60, 60) + 'px');
+    el.style.animation = `${anim} ${duration}s ease-in-out ${delay}s infinite`;
+    bgLayer.appendChild(el);
+  }
+
+  for(let i=0; i<26; i++){ spawnWord(); }
+
+  function spawnHeart(){
+    const el = document.createElement('div');
+    el.className = 'heart-float';
+    el.textContent = '💗';
+    el.style.left = rand(0, 96) + 'vw';
+    const duration = rand(10, 20);
+    const delay = rand(0, 12);
+    el.style.animation = `heartRise ${duration}s linear ${delay}s infinite`;
+    bgLayer.appendChild(el);
+  }
+
+  for(let i=0; i<10; i++){ spawnHeart(); }
+
+  // ---------- Hero message fade-in lines ----------
+  const heroLines = [
+"It was all my mistake.",
+"I take full responsibility for what I did.",
+"I know that I may have hurt you, disappointed you,",
+"or made you feel like you didn't matter to me.",
+"",
+"But you do matter to me.",
+"More than I probably say.",
+"",
+"I'm genuinely sorry from the bottom of my heart.",
+"I don't want to make excuses or try to justify my mistake.",
+"I just want you to know that I realize what I did,",
+"I regret it, and I truly apologize.",
+"",
+"You are one of the most important people in my life,",
+"and I never wanted my mistake to hurt our friendship.",
+"",
+"I'm sorry.",
+"For everything.",
+"From my heart. ❤️",
+"MAAF KAR DO NA APNI TOKEPI KO PLEASEEE ADIIII"
+  ];
+
+  const heroMessageEl = document.getElementById('hero-message');
+  heroLines.forEach((line, i) => {
+    const span = document.createElement('span');
+    span.className = 'fade-line';
+    span.style.animationDelay = (0.15 * i) + 's';
+    span.textContent = line === "" ? "\u00A0" : line;
+    heroMessageEl.appendChild(span);
+  });
+
+  // ---------- Card entrance ----------
+  window.addEventListener('load', () => {
+    document.getElementById('hero-card').classList.add('visible');
+  });
+
+  // ---------- Scroll reveal ----------
+  const revealEls = document.querySelectorAll('.fade-in-scroll');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if(entry.isIntersecting){
+        entry.target.classList.add('visible');
+      }
+    });
+  }, { threshold: 0.25 });
+  revealEls.forEach(el => io.observe(el));
+
+  // ---------- Forgive button ----------
+  const forgiveBtn = document.getElementById('forgive-btn');
+  const responseBox = document.getElementById('response-box');
+  let forgiven = false;
+
+  forgiveBtn.addEventListener('click', () => {
+    if(!forgiven){
+      responseBox.classList.add('show');
+      forgiven = true;
+      forgiveBtn.textContent = 'Thank You 💗';
+    }
+    launchConfetti();
+  });
+
+  function launchConfetti(){
+    const layer = document.getElementById('confetti-layer');
+    const emojis = ['💗','❤️','💕','✨'];
+    for(let i=0; i<28; i++){
+      const heart = document.createElement('div');
+      heart.className = 'confetti-heart';
+      heart.textContent = emojis[Math.floor(rand(0, emojis.length))];
+      heart.style.left = rand(0, 100) + 'vw';
+      heart.style.fontSize = rand(1, 2) + 'rem';
+      heart.style.animationDuration = rand(2.4, 4) + 's';
+      heart.style.animationDelay = rand(0, 0.6) + 's';
+      layer.appendChild(heart);
+      setTimeout(() => heart.remove(), 5000);
+    }
+  }
+
+  // ---------- Read My Heart button ----------
+  document.getElementById('heart-btn').addEventListener('click', () => {
+    document.getElementById('honest').scrollIntoView({ behavior: 'smooth' });
+  });
+</script>
+
+</body>
+</html>
